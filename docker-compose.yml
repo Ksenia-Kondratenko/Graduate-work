@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Контейнер MySQL
+  mysql:
+    image: mysql:latest
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: app
+      MYSQL_USER: app
+      MYSQL_PASSWORD: pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - backend
+
+  # Контейнер Gate Simulator
+  gate-simulator:
+    build: ./gate-simulator
+    container_name: gate_simulator
+    command: ["npm", "start"]
+    ports:
+      - "9999:9999"
+    depends_on:
+      - mysql
+    networks:
+      - backend
+
+  # Контейнер AQA Shop
+  aqa-shop:
+    build: .
+    container_name: aqa_shop
+    command: ["java", "-jar", "/app/aqa-shop.jar"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - gate-simulator
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  db_data:
