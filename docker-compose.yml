@@ -19,7 +19,7 @@ services:
 
   # Контейнер Gate Simulator
   gate-simulator:
-    build: ./gate-simulator
+    build: .
     container_name: gate_simulator
     command: ["npm", "start"]
     ports:
