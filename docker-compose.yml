@@ -41,6 +41,8 @@ services:
       - gate-simulator
     networks:
       - backend
+    environment:
+      SPRING_CREDIT_GATE_URL: http://gate_simulator:9999/credit
 
 networks:
   backend:
