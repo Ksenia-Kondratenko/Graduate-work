@@ -19,9 +19,9 @@ services:
 
   # Контейнер Gate Simulator
   gate-simulator:
-    build: .
+    build: ./gate-simulator
     container_name: gate_simulator
-    command: ["npm", "start"]
+    command: [ "npm", "start" ]
     ports:
       - "9999:9999"
     depends_on:
@@ -33,16 +33,17 @@ services:
   aqa-shop:
     build: .
     container_name: aqa_shop
-    command: ["java", "-jar", "/app/aqa-shop.jar"]
+    command: [ "java", "-jar", "/app/aqa-shop.jar" ]
     ports:
       - "8080:8080"
     depends_on:
       - mysql
       - gate-simulator
+    environment:
+      SPRING_PAYMENT_GATE_URL: http://gate_simulator:9999/payment
+      SPRING_CREDIT_GATE_URL: http://gate_simulator:9999/credit
     networks:
       - backend
-    environment:
-      SPRING_CREDIT_GATE_URL: http://gate_simulator:9999/credit
 
 networks:
   backend:
