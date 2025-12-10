@@ -577,7 +577,7 @@ def test_payment_with_a_not_valid_card(driver):
 # Ожидаем появления уведомления о неуспешной оплате
     wait = WebDriverWait(driver, 15)
     success_notification = wait.until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification notification_status_error')))
+        EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_error')))
 
     # Проверяем текст уведомления
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
