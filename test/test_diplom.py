@@ -795,3 +795,647 @@ def test_invalid_data_year(driver):
         # Ожидаем появления ошибки
             error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
             assert "Истёк срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.12: Ввод невалидных данных в поле "Год":
+def test_empty_field_year(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444 4444 4444 4441')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('DENIS IVANOV')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления ошибки
+    error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
+    assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.14: Ввод невалидных данных в поле "Месяц":
+def test_invalid_data_letter_year(driver):
+
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    year_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    year_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = year_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "рр"
+    year_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = year_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только цифры
+    assert set(updated_value).issubset(
+        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
+
+# Тест 2.16: Ввод невалидных данных в поле "Владелец":
+def test_invalid_data_int_owner(driver):
+
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    owner_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    owner_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = owner_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "456"
+    owner_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = owner_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только буквы
+    assert not any(char.isdigit() for char in updated_value), \
+        f"Поле принимает значение, отличное от букв. Текущее значение: '{updated_value}'"
+
+# Тест 2.17: Ввод невалидных данных в поле "Владелец":
+def test_empty_field_owner(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444 4444 4444 4441')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления ошибки
+    error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[3]')
+    assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.20: Ввод невалидных данных в поле "CVV/CVC":
+def test_invalid_data_letter_cvv(driver):
+
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    cvv_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    cvv_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = cvv_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "ddd"
+    cvv_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = cvv_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только цифры
+    assert set(updated_value).issubset(
+        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
+
+# Тест 2.17: Ввод невалидных данных в поле "Владелец":
+def test_empty_field_cvv(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444 4444 4444 4441')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('555')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления ошибки
+    error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[3]')
+    assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.24: Проверка записи в БД
+# 2.25. Оплата тура с получением кредита по невалидной карте "DECLINED":
+def test_payment_by_invalid_card_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444444444444442')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('DENIS IVANOV')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления уведомления о неуспешной оплате
+    wait = WebDriverWait(driver, 15)
+    success_notification = wait.until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_error')))
+
+    # Проверяем текст уведомления
+    notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
+    assert "Ошибка! Банк отказал в проведении операции." in notification_text
+
+# Тест 2.26: Ввод невалидных данных в поле "Номер карты":
+def test_invalid_data_letter_card_number_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = card_number_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "4444aaaa"
+    card_number_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = card_number_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только цифры
+    assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
+
+
+# Тест 2.27: Ввод невалидных данных в поле "Номер карты":
+def test_empty_field_card_number_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('DENIS IVANOV')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления ошибки
+    error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[3]')
+    assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.28: Ввод невалидных данных в поле "Месяц":
+def test_invalid_data_month_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода, очищаем и заполняем их данными
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    month_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = month_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "13"
+    month_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = month_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только цифры
+    assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
+
+   # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Проверяем корректность месяца
+    if updated_value:
+        entered_month = int(updated_value)
+        if 1 <= entered_month <= 12:
+            is_month_correct = True
+        else:
+        # Ожидаем появления ошибки
+            error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
+            assert "Неверно указан срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+
+# Тест 2.29: Ввод невалидных данных в поле "Месяц":
+def test_empty_field_month_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444 4444 4444 4441')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('DENIS IVANOV')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления ошибки
+    error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
+    assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+
+# Тест 2.30: Ввод невалидных данных в поле "Месяц":
+def test_invalid_data_letter_month_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    month_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    month_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = month_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "пп"
+    month_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = month_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только цифры
+    assert set(updated_value).issubset(
+        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
+
+
+# Тест 2.31: Ввод невалидных данных в поле "Год":
+def test_invalid_data_year_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода, очищаем и заполняем их данными
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    year_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = year_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "24"
+    year_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = year_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только цифры
+    assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Проверяем корректность года
+    if updated_value:
+        entered_year = int(updated_value)
+        if 25 <= entered_year:
+            is_year_correct = True
+        else:
+        # Ожидаем появления ошибки
+            error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
+            assert "Истёк срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.32: Ввод невалидных данных в поле "Год":
+def test_empty_field_year_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    ## Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444 4444 4444 4441')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('DENIS IVANOV')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления ошибки
+    error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
+    assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.33: Ввод невалидных данных в поле "Месяц":
+def test_invalid_data_letter_year_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    year_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    year_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = year_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "рр"
+    year_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = year_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только цифры
+    assert set(updated_value).issubset(
+        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
+
+# Тест 2.35: Ввод невалидных данных в поле "Владелец":
+def test_invalid_data_int_owner_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    owner_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    owner_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = owner_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "456"
+    owner_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = owner_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только буквы
+    assert not any(char.isdigit() for char in updated_value), \
+        f"Поле принимает значение, отличное от букв. Текущее значение: '{updated_value}'"
+
+# Тест 2.37: Ввод невалидных данных в поле "Владелец":
+def test_empty_field_owner_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444 4444 4444 4441')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления ошибки
+    error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[3]')
+    assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.38: Ввод невалидных данных в поле "CVV/CVC":
+def test_invalid_data_letter_cvv_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    cvv_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    cvv_input.clear()
+
+    # Изначальное пустое значение поля
+    initial_value = cvv_input.get_attribute('value')
+
+    # Вводим невалидные данные
+    test_string = "ddd"
+    cvv_input.send_keys(test_string)
+
+    # Новое значение поля
+    updated_value = cvv_input.get_attribute('value')
+
+    # Проверяем, что поле принимает только цифры
+    assert set(updated_value).issubset(
+        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
+
+# Тест 2.39: Ввод невалидных данных в поле "CVV/CVC":
+def test_empty_field_cvv_credit(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить в кредит'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444 4444 4444 4441')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('555')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления ошибки
+    error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[3]')
+    assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
+
+# Тест 2.50: Проверка записи в базу данных
