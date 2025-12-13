@@ -585,7 +585,13 @@ def test_payment_by_invalid_card(driver):
     assert "Ошибка! Банк отказал в проведении операции." in notification_text
 
 # Тест 2.2: Ввод невалидных данных в поле "Номер карты":
-def test_invalid_data_letter_card_number(driver):
+@pytest.mark.parametrize("test_string", [
+    "aaa",           # Буквы
+    "!#$%",          # Спецсимволы
+    " ",             # Пробел
+])
+
+def test_invalid_data_card_number(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -597,11 +603,7 @@ def test_invalid_data_letter_card_number(driver):
     card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     card_number_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = card_number_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "4444aaaa"
     card_number_input.send_keys(test_string)
 
     # Новое значение поля
@@ -611,7 +613,7 @@ def test_invalid_data_letter_card_number(driver):
     assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
 
-# Тест 2.5: Ввод невалидных данных в поле "Номер карты":
+# Тест 2.5: Ввод невалидных данных в поле "Номер карты" (пустое поле):
 def test_empty_field_card_number(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -649,7 +651,13 @@ def test_empty_field_card_number(driver):
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
 # Тест 2.6: Ввод невалидных данных в поле "Месяц":
-def test_invalid_data_month(driver):
+@pytest.mark.parametrize("test_string", [
+    "aaa",
+    "!#$%",
+    " ",
+    "13",
+])
+def test_invalid_data_month(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -661,11 +669,7 @@ def test_invalid_data_month(driver):
     month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     month_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = month_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "13"
     month_input.send_keys(test_string)
 
     # Новое значение поля
@@ -689,7 +693,7 @@ def test_invalid_data_month(driver):
             assert "Неверно указан срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
 
-# Тест 2.7: Ввод невалидных данных в поле "Месяц":
+# Тест 2.7: Ввод невалидных данных в поле "Месяц" (пустое поле):
 def test_empty_field_month(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -726,38 +730,13 @@ def test_empty_field_month(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-
-# Тест 2.10: Ввод невалидных данных в поле "Месяц":
-def test_invalid_data_letter_month(driver):
-
-    # Переходим на страницу
-    driver.get("http://localhost:8080/")
-
-    # Находим и нажимаем кнопку 'Купить'
-    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
-    buy_button.click()
-
-    # Находим поля ввода и заполняем их данными
-    month_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-    month_input.clear()
-
-    # Изначальное пустое значение поля
-    initial_value = month_input.get_attribute('value')
-
-    # Вводим невалидные данные
-    test_string = "пп"
-    month_input.send_keys(test_string)
-
-    # Новое значение поля
-    updated_value = month_input.get_attribute('value')
-
-    # Проверяем, что поле принимает только цифры
-    assert set(updated_value).issubset(
-        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
-
-
 # Тест 2.11: Ввод невалидных данных в поле "Год":
-def test_invalid_data_year(driver):
+@pytest.mark.parametrize("test_string", [
+    "aaa",
+    "!#$%",
+    " ",
+])
+def test_invalid_data_year(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -769,11 +748,7 @@ def test_invalid_data_year(driver):
     year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     year_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = year_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "24"
     year_input.send_keys(test_string)
 
     # Новое значение поля
@@ -796,7 +771,7 @@ def test_invalid_data_year(driver):
             error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
             assert "Истёк срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-# Тест 2.12: Ввод невалидных данных в поле "Год":
+# Тест 2.12: Ввод невалидных данных в поле "Год" (пустое поле):
 def test_empty_field_year(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -833,37 +808,13 @@ def test_empty_field_year(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-# Тест 2.14: Ввод невалидных данных в поле "Месяц":
-def test_invalid_data_letter_year(driver):
-
-    # Переходим на страницу
-    driver.get("http://localhost:8080/")
-
-    # Находим и нажимаем кнопку 'Купить'
-    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
-    buy_button.click()
-
-    # Находим поля ввода и заполняем их данными
-    year_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-    year_input.clear()
-
-    # Изначальное пустое значение поля
-    initial_value = year_input.get_attribute('value')
-
-    # Вводим невалидные данные
-    test_string = "рр"
-    year_input.send_keys(test_string)
-
-    # Новое значение поля
-    updated_value = year_input.get_attribute('value')
-
-    # Проверяем, что поле принимает только цифры
-    assert set(updated_value).issubset(
-        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
-
 # Тест 2.16: Ввод невалидных данных в поле "Владелец":
-def test_invalid_data_int_owner(driver):
-
+@pytest.mark.parametrize("test_string", [
+    "456",
+    "!#$%",
+    " ",
+])
+def test_invalid_data_owner(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -875,11 +826,7 @@ def test_invalid_data_int_owner(driver):
     owner_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     owner_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = owner_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "456"
     owner_input.send_keys(test_string)
 
     # Новое значение поля
@@ -889,7 +836,7 @@ def test_invalid_data_int_owner(driver):
     assert not any(char.isdigit() for char in updated_value), \
         f"Поле принимает значение, отличное от букв. Текущее значение: '{updated_value}'"
 
-# Тест 2.17: Ввод невалидных данных в поле "Владелец":
+# Тест 2.17: Ввод невалидных данных в поле "Владелец" (пустое поле):
 def test_empty_field_owner(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -927,8 +874,12 @@ def test_empty_field_owner(driver):
     assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
 # Тест 2.20: Ввод невалидных данных в поле "CVV/CVC":
-def test_invalid_data_letter_cvv(driver):
-
+@pytest.mark.parametrize("test_string", [
+    "aaa",
+    "!#$%",
+    " ",
+])
+def test_invalid_data_cvv(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -940,11 +891,7 @@ def test_invalid_data_letter_cvv(driver):
     cvv_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     cvv_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = cvv_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "ddd"
     cvv_input.send_keys(test_string)
 
     # Новое значение поля
@@ -954,7 +901,7 @@ def test_invalid_data_letter_cvv(driver):
     assert set(updated_value).issubset(
         set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
-# Тест 2.17: Ввод невалидных данных в поле "Владелец":
+# Тест 2.17: Ввод невалидных данных в поле "CVV/CVC" (пустое поле):
 def test_empty_field_cvv(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -992,6 +939,7 @@ def test_empty_field_cvv(driver):
     assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
 # Тест 2.24: Проверка записи в БД
+
 # 2.25. Оплата тура с получением кредита по невалидной карте "DECLINED":
 def test_payment_by_invalid_card_credit(driver):
     # Переходим на страницу
@@ -1036,7 +984,12 @@ def test_payment_by_invalid_card_credit(driver):
     assert "Ошибка! Банк отказал в проведении операции." in notification_text
 
 # Тест 2.26: Ввод невалидных данных в поле "Номер карты":
-def test_invalid_data_letter_card_number_credit(driver):
+@pytest.mark.parametrize("test_string", [
+    "aaa",
+    "!#$%",
+    " ",
+])
+def test_invalid_data_card_number_credit(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -1048,11 +1001,7 @@ def test_invalid_data_letter_card_number_credit(driver):
     card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     card_number_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = card_number_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "4444aaaa"
     card_number_input.send_keys(test_string)
 
     # Новое значение поля
@@ -1062,7 +1011,7 @@ def test_invalid_data_letter_card_number_credit(driver):
     assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
 
-# Тест 2.27: Ввод невалидных данных в поле "Номер карты":
+# Тест 2.27: Ввод невалидных данных в поле "Номер карты (пустое поле)":
 def test_empty_field_card_number_credit(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -1100,7 +1049,13 @@ def test_empty_field_card_number_credit(driver):
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
 # Тест 2.28: Ввод невалидных данных в поле "Месяц":
-def test_invalid_data_month_credit(driver):
+@pytest.mark.parametrize("test_string", [
+    "aaa",
+    "!#$%",
+    " ",
+    "13",
+])
+def test_invalid_data_month_credit(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -1112,11 +1067,7 @@ def test_invalid_data_month_credit(driver):
     month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     month_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = month_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "13"
     month_input.send_keys(test_string)
 
     # Новое значение поля
@@ -1140,7 +1091,7 @@ def test_invalid_data_month_credit(driver):
             assert "Неверно указан срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
 
-# Тест 2.29: Ввод невалидных данных в поле "Месяц":
+# Тест 2.29: Ввод невалидных данных в поле "Месяц" (пустое поле):
 def test_empty_field_month_credit(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -1177,37 +1128,14 @@ def test_empty_field_month_credit(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-
-# Тест 2.30: Ввод невалидных данных в поле "Месяц":
-def test_invalid_data_letter_month_credit(driver):
-    # Переходим на страницу
-    driver.get("http://localhost:8080/")
-
-    # Находим и нажимаем кнопку 'Купить в кредит'
-    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
-    buy_button.click()
-
-    # Находим поля ввода и заполняем их данными
-    month_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-    month_input.clear()
-
-    # Изначальное пустое значение поля
-    initial_value = month_input.get_attribute('value')
-
-    # Вводим невалидные данные
-    test_string = "пп"
-    month_input.send_keys(test_string)
-
-    # Новое значение поля
-    updated_value = month_input.get_attribute('value')
-
-    # Проверяем, что поле принимает только цифры
-    assert set(updated_value).issubset(
-        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
-
-
 # Тест 2.31: Ввод невалидных данных в поле "Год":
-def test_invalid_data_year_credit(driver):
+@pytest.mark.parametrize("test_string", [
+    "aaa",
+    "!#$%",
+    " ",
+    "24",
+])
+def test_invalid_data_year_credit(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -1219,11 +1147,7 @@ def test_invalid_data_year_credit(driver):
     year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     year_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = year_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "24"
     year_input.send_keys(test_string)
 
     # Новое значение поля
@@ -1246,7 +1170,7 @@ def test_invalid_data_year_credit(driver):
             error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
             assert "Истёк срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-# Тест 2.32: Ввод невалидных данных в поле "Год":
+# Тест 2.32: Ввод невалидных данных в поле "Год" (пустое поле):
 def test_empty_field_year_credit(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -1283,35 +1207,13 @@ def test_empty_field_year_credit(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-# Тест 2.33: Ввод невалидных данных в поле "Месяц":
-def test_invalid_data_letter_year_credit(driver):
-    # Переходим на страницу
-    driver.get("http://localhost:8080/")
-
-    # Находим и нажимаем кнопку 'Купить в кредит'
-    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
-    buy_button.click()
-
-    # Находим поля ввода и заполняем их данными
-    year_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-    year_input.clear()
-
-    # Изначальное пустое значение поля
-    initial_value = year_input.get_attribute('value')
-
-    # Вводим невалидные данные
-    test_string = "рр"
-    year_input.send_keys(test_string)
-
-    # Новое значение поля
-    updated_value = year_input.get_attribute('value')
-
-    # Проверяем, что поле принимает только цифры
-    assert set(updated_value).issubset(
-        set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
-
 # Тест 2.35: Ввод невалидных данных в поле "Владелец":
-def test_invalid_data_int_owner_credit(driver):
+@pytest.mark.parametrize("test_string", [
+    "456",
+    "!#$%",
+    " ",
+])
+def test_invalid_data_owner_credit(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -1323,11 +1225,7 @@ def test_invalid_data_int_owner_credit(driver):
     owner_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     owner_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = owner_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "456"
     owner_input.send_keys(test_string)
 
     # Новое значение поля
@@ -1337,7 +1235,7 @@ def test_invalid_data_int_owner_credit(driver):
     assert not any(char.isdigit() for char in updated_value), \
         f"Поле принимает значение, отличное от букв. Текущее значение: '{updated_value}'"
 
-# Тест 2.37: Ввод невалидных данных в поле "Владелец":
+# Тест 2.37: Ввод невалидных данных в поле "Владелец" (пустое поле):
 def test_empty_field_owner_credit(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -1375,7 +1273,12 @@ def test_empty_field_owner_credit(driver):
     assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
 # Тест 2.38: Ввод невалидных данных в поле "CVV/CVC":
-def test_invalid_data_letter_cvv_credit(driver):
+@pytest.mark.parametrize("test_string", [
+    "aaa",
+    "!#$%",
+    " ",
+])
+def test_invalid_data_cvv_credit(driver, test_string):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
 
@@ -1387,11 +1290,7 @@ def test_invalid_data_letter_cvv_credit(driver):
     cvv_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
     cvv_input.clear()
 
-    # Изначальное пустое значение поля
-    initial_value = cvv_input.get_attribute('value')
-
     # Вводим невалидные данные
-    test_string = "ddd"
     cvv_input.send_keys(test_string)
 
     # Новое значение поля
@@ -1401,7 +1300,7 @@ def test_invalid_data_letter_cvv_credit(driver):
     assert set(updated_value).issubset(
         set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
-# Тест 2.39: Ввод невалидных данных в поле "CVV/CVC":
+# Тест 2.39: Ввод невалидных данных в поле "CVV/CVC" (пустое поле):
 def test_empty_field_cvv_credit(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
