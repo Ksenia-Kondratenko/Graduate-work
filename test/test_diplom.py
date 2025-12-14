@@ -1,9 +1,11 @@
+import allure
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from .database import DBConnector
 
 
 @pytest.fixture
@@ -18,50 +20,56 @@ def driver():
     yield driver
     driver.quit()
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.1: Оплата тура с валидной картой 'APPROVED'")
 # Позитивные сценарии
 # Тест 1.1: Оплата тура с валидной картой "APPROVED":
 def test_payment_with_a_valid_card(driver):
-    # Переходим на страницу
-    driver.get("http://localhost:8080/")
+    with allure.step("Переходим на страницу"):
+        driver.get("http://localhost:8080/")
 
-    # Находим и нажимаем кнопку 'Купить'
-    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
-    buy_button.click()
+    with allure.step("Находим и нажимаем кнопку 'Купить'"):
+        buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+        buy_button.click()
 
-    # Находим поля ввода и заполняем их валидными данными
-    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-    card_number_input.clear()
-    card_number_input.send_keys('4444444444444441')
+    with allure.step("Находим поля ввода и заполняем их валидными данными"):
+        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+        card_number_input.clear()
+        card_number_input.send_keys('4444444444444441')
 
-    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
-    month_input.clear()
-    month_input.send_keys('07')
+        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+        month_input.clear()
+        month_input.send_keys('07')
 
-    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
-    year_input.clear()
-    year_input.send_keys('26')
+        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+        year_input.clear()
+        year_input.send_keys('26')
 
-    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
-    owner_input.clear()
-    owner_input.send_keys('DENIS IVANOV')
+        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+        owner_input.clear()
+        owner_input.send_keys('DENIS IVANOV')
 
-    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
-    cvc_input.clear()
-    cvc_input.send_keys('555')
+        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+        cvc_input.clear()
+        cvc_input.send_keys('555')
 
-    # Находим и нажимаем кнопку "Продолжить"
-    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
-    continue_button.click()
+    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
+        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+        continue_button.click()
 
-    # Ожидаем появления уведомления об успешной оплате
-    wait = WebDriverWait(driver, 15)
-    success_notification = wait.until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_ok')))
+    with allure.step("Ожидаем появления уведомления об успешной оплате"):
+        wait = WebDriverWait(driver, 15)
+        success_notification = wait.until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_ok')))
 
-    # Проверяем текст уведомления
-    notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
-    assert "Операция одобрена Банком." in notification_text
+    with allure.step("Проверяем текст уведомления"):
+        notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
+        assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.2: Ввод валидных данных в поле 'Номер карты'")
 # Тест 1.2: Ввод валидных данных в поле "Номер карты":
 def test_valid_data_card_number(driver):
     # Переходим на страницу
@@ -105,6 +113,9 @@ def test_valid_data_card_number(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.3: Ввод валидных данных в поле 'Месяц'")
 # Тест 1.3: Ввод валидных данных в поле "Месяц":
 def test_valid_data_month(driver):
     # Переходим на страницу
@@ -148,6 +159,9 @@ def test_valid_data_month(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.4: Ввод валидных данных в поле 'Год'")
 # Тест 1.4: Ввод валидных данных в поле "Год":
 def test_valid_data_year(driver):
     # Переходим на страницу
@@ -191,6 +205,9 @@ def test_valid_data_year(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.5: Ввод валидных данных в поле 'Владелец'")
 # Тест 1.5: Ввод валидных данных в поле "Владелец":
 def test_valid_data_owner(driver):
     # Переходим на страницу
@@ -234,6 +251,9 @@ def test_valid_data_owner(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.6: Ввод валидных данных в поле 'CVC/CVV'")
 # Тест 1.6: Ввод валидных данных в поле "CVC/CVV":
 def test_valid_data_cvc(driver):
     # Переходим на страницу
@@ -277,8 +297,71 @@ def test_valid_data_cvc(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.7: Проверка записи в базу данных")
 # Тест 1.7: Проверка записи в базу данных
+def test_database_presence_rec_valid_card(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
 
+    # Находим и нажимаем кнопку 'Купить'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их валидными данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444444444444441')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('07')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('DENIS IVANOV')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления уведомления об успешной оплате
+    wait = WebDriverWait(driver, 15)
+    success_notification = wait.until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_ok')))
+
+    # Проверяем текст уведомления
+    notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
+    assert "Операция одобрена Банком." in notification_text
+
+    # Подключаемся к базе данных и проверяем наличие записи
+    connector = DBConnector(
+        host='mysql_db',
+        port=3306,
+        user='app',
+        password='pass',
+        db='app'
+    )
+
+    # Запрос к базе данных
+    query = "SELECT COUNT(*) FROM payment_entity WHERE card_number=%s;"
+    count = connector.fetch_data(query, ('4444444444444441',))[0][0]
+
+    # Проверяем, что запись о платеже появилась
+    assert count > 0, "Запись о платеже не найдена в базе данных!"
+
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 1.8: Оплата тура с получением кредита по валидной карте 'APPROVED'")
 # Тест 1.8: Оплата тура с получением кредита по валидной карте "APPROVED":
 def test_valid_credit(driver):
     # Переходим на страницу
@@ -322,6 +405,9 @@ def test_valid_credit(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 1.9: Ввод валидных данных в поле 'Номер карты'")
 # Тест 1.9: Ввод валидных данных в поле "Номер карты":
 def test_valid_data_credit_card_number(driver):
     # Переходим на страницу
@@ -365,6 +451,9 @@ def test_valid_data_credit_card_number(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 1.10: Ввод валидных данных в поле 'Месяц'")
 # Тест 1.10: Ввод валидных данных в поле "Месяц":
 def test_valid_data_credit_month(driver):
     # Переходим на страницу
@@ -408,6 +497,9 @@ def test_valid_data_credit_month(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 1.11: Ввод валидных данных в поле 'Год'")
 # Тест 1.11: Ввод валидных данных в поле "Год":
 def test_valid_data_credit_year(driver):
     # Переходим на страницу
@@ -451,6 +543,9 @@ def test_valid_data_credit_year(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 1.12: Ввод валидных данных в поле 'Владелец'")
 # Тест 1.12: Ввод валидных данных в поле "Владелец":
 def test_valid_data_credit_owner(driver):
     # Переходим на страницу
@@ -494,6 +589,9 @@ def test_valid_data_credit_owner(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 1.13: Ввод валидных данных в поле 'CVC/CVV'")
 # Тест 1.13: Ввод валидных данных в поле "CVC/CVV":
 def test_valid_data_credit_cvc(driver):
     # Переходим на страницу
@@ -537,9 +635,11 @@ def test_valid_data_credit_cvc(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
-
 # # Тест 1.14: Проверка записи в базу данных
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.1: Оплата тура с невалидной картой 'DECLINED'")
 # Негативные сценарии
 # Тест 2.1: Оплата тура с невалидной картой "DECLINED":":
 def test_payment_by_invalid_card(driver):
@@ -584,6 +684,9 @@ def test_payment_by_invalid_card(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Ошибка! Банк отказал в проведении операции." in notification_text
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.2: Ввод невалидных данных в поле 'Номер карты'")
 # Тест 2.2: Ввод невалидных данных в поле "Номер карты":
 @pytest.mark.parametrize("test_string", [
     "aaa",           # Буквы
@@ -611,6 +714,9 @@ def test_invalid_data_card_number(driver, test_string):
     # Проверяем, что поле принимает только цифры
     assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.3: Ввод невалидных данных в поле 'Номер карты' (пустое поле)")
 # Тест 2.3: Ввод невалидных данных в поле "Номер карты" (пустое поле):
 def test_empty_field_card_number(driver):
     # Переходим на страницу
@@ -648,6 +754,9 @@ def test_empty_field_card_number(driver):
     error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.4: Ввод невалидных данных в поле 'Месяц'")
 # Тест 2.4: Ввод невалидных данных в поле "Месяц":
 @pytest.mark.parametrize("test_string", [
     "aaa",
@@ -690,7 +799,9 @@ def test_invalid_data_month(driver, test_string):
             error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
             assert "Неверно указан срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.5: Ввод невалидных данных в поле 'Месяц' (пустое поле)")
 # Тест 2.5: Ввод невалидных данных в поле "Месяц" (пустое поле):
 def test_empty_field_month(driver):
     # Переходим на страницу
@@ -728,6 +839,9 @@ def test_empty_field_month(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.6: Ввод невалидных данных в поле 'Год'")
 # Тест 2.6: Ввод невалидных данных в поле "Год":
 @pytest.mark.parametrize("test_string", [
     "aaa",
@@ -769,6 +883,9 @@ def test_invalid_data_year(driver, test_string):
             error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
             assert "Истёк срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.7: Ввод невалидных данных в поле 'Год' (пустое поле)")
 # Тест 2.7: Ввод невалидных данных в поле "Год" (пустое поле):
 def test_empty_field_year(driver):
     # Переходим на страницу
@@ -806,6 +923,9 @@ def test_empty_field_year(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.8: Ввод невалидных данных в поле 'Владелец'")
 # Тест 2.8: Ввод невалидных данных в поле "Владелец":
 @pytest.mark.parametrize("test_string", [
     "456",
@@ -834,6 +954,9 @@ def test_invalid_data_owner(driver, test_string):
     assert not any(char.isdigit() for char in updated_value), \
         f"Поле принимает значение, отличное от букв. Текущее значение: '{updated_value}'"
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.9: Ввод невалидных данных в поле 'Владелец' (пустое поле)")
 # Тест 2.9: Ввод невалидных данных в поле "Владелец" (пустое поле):
 def test_empty_field_owner(driver):
     # Переходим на страницу
@@ -871,6 +994,9 @@ def test_empty_field_owner(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[3]')
     assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.4: Ввод невалидных данных в поле 'CVV/CVC'")
 # Тест 2.10: Ввод невалидных данных в поле "CVV/CVC":
 @pytest.mark.parametrize("test_string", [
     "aaa",
@@ -899,6 +1025,9 @@ def test_invalid_data_cvv(driver, test_string):
     assert set(updated_value).issubset(
         set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.4: Ввод невалидных данных в поле 'CVV/CVC' (пустое поле)")
 # Тест 2.11: Ввод невалидных данных в поле "CVV/CVC" (пустое поле):
 def test_empty_field_cvv(driver):
     # Переходим на страницу
@@ -938,7 +1067,10 @@ def test_empty_field_cvv(driver):
 
 # Тест 2.12: Проверка записи в БД
 
-# 2.13. Оплата тура с получением кредита по невалидной карте "DECLINED":
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.13. Оплата тура с получением кредита по невалидной карте 'DECLINED'")
+# Тест 2.13. Оплата тура с получением кредита по невалидной карте "DECLINED":
 def test_payment_by_invalid_card_credit(driver):
     # Переходим на страницу
     driver.get("http://localhost:8080/")
@@ -981,6 +1113,9 @@ def test_payment_by_invalid_card_credit(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Ошибка! Банк отказал в проведении операции." in notification_text
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.14. Ввод невалидных данных в поле 'Номер карты'")
 # Тест 2.14: Ввод невалидных данных в поле "Номер карты":
 @pytest.mark.parametrize("test_string", [
     "aaa",
@@ -1008,6 +1143,9 @@ def test_invalid_data_card_number_credit(driver, test_string):
     # Проверяем, что поле принимает только цифры
     assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.15. Ввод невалидных данных в поле 'Номер карты' (пустое поле)")
 # Тест 2.15: Ввод невалидных данных в поле "Номер карты (пустое поле)":
 def test_empty_field_card_number_credit(driver):
     # Переходим на страницу
@@ -1045,6 +1183,9 @@ def test_empty_field_card_number_credit(driver):
     error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.16. Ввод невалидных данных в поле 'Месяц'")
 # Тест 2.16: Ввод невалидных данных в поле "Месяц":
 @pytest.mark.parametrize("test_string", [
     "aaa",
@@ -1087,7 +1228,9 @@ def test_invalid_data_month_credit(driver, test_string):
             error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
             assert "Неверно указан срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.17. Ввод невалидных данных в поле 'Месяц' (пустое поле)")
 # Тест 2.17: Ввод невалидных данных в поле "Месяц" (пустое поле):
 def test_empty_field_month_credit(driver):
     # Переходим на страницу
@@ -1125,6 +1268,9 @@ def test_empty_field_month_credit(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.18. Ввод невалидных данных в поле 'Год'")
 # Тест 2.18: Ввод невалидных данных в поле "Год":
 @pytest.mark.parametrize("test_string", [
     "aaa",
@@ -1167,6 +1313,9 @@ def test_invalid_data_year_credit(driver, test_string):
             error_message = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
             assert "Истёк срок действия карты" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.19. Ввод невалидных данных в поле 'Год' (пустое поле)")
 # Тест 2.19: Ввод невалидных данных в поле "Год" (пустое поле):
 def test_empty_field_year_credit(driver):
     # Переходим на страницу
@@ -1204,6 +1353,9 @@ def test_empty_field_year_credit(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
     assert "Неверный формат" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.20. Ввод невалидных данных в поле 'Владелец'")
 # Тест 2.20: Ввод невалидных данных в поле "Владелец":
 @pytest.mark.parametrize("test_string", [
     "456",
@@ -1232,6 +1384,9 @@ def test_invalid_data_owner_credit(driver, test_string):
     assert not any(char.isdigit() for char in updated_value), \
         f"Поле принимает значение, отличное от букв. Текущее значение: '{updated_value}'"
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.21. Ввод невалидных данных в поле 'Владелец' (пустое поле)")
 # Тест 2.21: Ввод невалидных данных в поле "Владелец" (пустое поле):
 def test_empty_field_owner_credit(driver):
     # Переходим на страницу
@@ -1269,6 +1424,9 @@ def test_empty_field_owner_credit(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[3]')
     assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.22. Ввод невалидных данных в поле 'CVV/CVC'")
 # Тест 2.22: Ввод невалидных данных в поле "CVV/CVC":
 @pytest.mark.parametrize("test_string", [
     "aaa",
@@ -1297,6 +1455,9 @@ def test_invalid_data_cvv_credit(driver, test_string):
     assert set(updated_value).issubset(
         set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.23. Ввод невалидных данных в поле 'CVV/CVC' (пустое поле)")
 # Тест 2.23: Ввод невалидных данных в поле "CVV/CVC" (пустое поле):
 def test_empty_field_cvv_credit(driver):
     # Переходим на страницу
