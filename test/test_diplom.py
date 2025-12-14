@@ -67,6 +67,7 @@ def test_payment_with_a_valid_card(driver):
         notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
         assert "Операция одобрена Банком." in notification_text
 
+
 @allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура по дебетовой карте")
 @allure.description("Тест 1.2: Ввод валидных данных в поле 'Номер карты'")
