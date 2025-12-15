@@ -1497,3 +1497,25 @@ def test_empty_field_cvv_credit(driver):
     assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
 # Тест 2.24: Проверка записи в базу данных
+
+@allure.epic("Иные проверки")
+@allure.title("Проверка орфографии")
+@allure.description("Тест 2.25: Проверка орфографии")
+# Тест 2.25: Проверка орфографии
+@pytest.mark.parametrize("expected_text, xpath", [
+    ("Путешествие дня", '//*[@id="root"]/div/h2'),
+    ("Марракеш", '//*[@id="root"]/div/div/div/div[2]/h3'),
+    ("Сказочный Восток", '//*[@id="root"]/div/div/div/div[2]/ul/li[1]'),
+    ("33 360 миль на карту", '//*[@id="root"]/div/div/div/div[2]/ul/li[2]'),
+    ("До 7% на остаток по счёту", '//*[@id="root"]/div/div/div/div[2]/ul/li[3]'),
+    ("Всего 45 000 руб.!", '//*[@id="root"]/div/div/div/div[2]/ul/li[4]'),
+])
+def test_valid_text_1(driver, expected_text, xpath):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим элемент с текстом по XPath
+    notification_text = driver.find_element(By.XPATH, xpath).text
+
+    # Проверяем, что текст содержит известное правильное предложение
+    assert expected_text in notification_text, f"Текст поля не содержит '{expected_text}'"
