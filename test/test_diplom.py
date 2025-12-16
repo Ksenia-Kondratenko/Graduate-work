@@ -73,46 +73,46 @@ def test_payment_with_a_valid_card(driver):
 @allure.description("Тест 1.2: Ввод валидных данных в поле 'Номер карты'")
 # Тест 1.2: Ввод валидных данных в поле "Номер карты":
 def test_valid_data_card_number(driver):
-    # Переходим на страницу
-    driver.get("http://localhost:8080/")
+    with allure.step("Переходим на страницу"):
+        driver.get("http://localhost:8080/")
 
-    # Находим и нажимаем кнопку 'Купить'
-    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
-    buy_button.click()
+    with allure.step("Находим и нажимаем кнопку 'Купить'"):
+        buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+        buy_button.click()
 
-    # Находим поля ввода и заполняем их валидными данными
-    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-    card_number_input.clear()
-    card_number_input.send_keys('4444444444444441')
+    with allure.step("Находим поля ввода и заполняем их валидными данными"):
+        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+        card_number_input.clear()
+        card_number_input.send_keys('4444444444444441')
 
-    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
-    month_input.clear()
-    month_input.send_keys('07')
+        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+        month_input.clear()
+        month_input.send_keys('07')
 
-    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
-    year_input.clear()
-    year_input.send_keys('26')
+        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+        year_input.clear()
+        year_input.send_keys('26')
 
-    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
-    owner_input.clear()
-    owner_input.send_keys('DENIS IVANOV')
+        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+        owner_input.clear()
+        owner_input.send_keys('DENIS IVANOV')
 
-    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
-    cvc_input.clear()
-    cvc_input.send_keys('555')
+        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+        cvc_input.clear()
+        cvc_input.send_keys('555')
 
-    # Находим и нажимаем кнопку "Продолжить"
-    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
-    continue_button.click()
+    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
+        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+        continue_button.click()
 
-    # Ожидаем появления уведомления об успешной оплате
-    wait = WebDriverWait(driver, 15)
-    success_notification = wait.until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_ok')))
+    with allure.step("Ожидаем появления уведомления об успешной оплате"):
+        wait = WebDriverWait(driver, 15)
+        success_notification = wait.until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_ok')))
 
-    # Проверяем текст уведомления
-    notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
-    assert "Операция одобрена Банком." in notification_text
+    with allure.step("Проверяем текст уведомления"):
+        notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
+        assert "Операция одобрена Банком." in notification_text
 
 @allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура по дебетовой карте")
@@ -636,6 +636,9 @@ def test_valid_data_credit_cvc(driver):
     notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
     assert "Операция одобрена Банком." in notification_text
 
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 1.7: Проверка записи в базу данных")
 # Тест 1.14: Проверка записи в базу данных
 def test_database_presence_rec_valid_card_credit(driver):
     # Переходим на страницу
@@ -1127,7 +1130,70 @@ def test_empty_field_cvv(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[3]')
     assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
-# Тест 2.12: Проверка записи в БД
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 2.12: Проверка записи в базу данных")
+# Тест 2.12: Проверка записи в базу данных
+def test_database_by_invalid_card(driver):
+    # Переходим на страницу
+    driver.get("http://localhost:8080/")
+
+    # Находим и нажимаем кнопку 'Купить'
+    buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+    buy_button.click()
+
+    # Находим поля ввода и заполняем их данными
+    card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+    card_number_input.clear()
+    card_number_input.send_keys('4444444444444442')
+
+    month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+    month_input.clear()
+    month_input.send_keys('08')
+
+    year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+    year_input.clear()
+    year_input.send_keys('26')
+
+    owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+    owner_input.clear()
+    owner_input.send_keys('DENIS IVANOV')
+
+    cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+    cvc_input.clear()
+    cvc_input.send_keys('555')
+
+    # Находим и нажимаем кнопку "Продолжить"
+    continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+    continue_button.click()
+
+    # Ожидаем появления уведомления о неуспешной оплате
+    wait = WebDriverWait(driver, 15)
+    success_notification = wait.until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_error')))
+
+    # Проверяем текст уведомления
+    notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
+    assert "Ошибка! Банк отказал в проведении операции." in notification_text
+    # Проверяем запись в базе данных
+    connector = DBConnector(
+        host='mysql_db',
+        port=3306,
+        user='app',
+        password='pass',
+        db='app'
+    )
+
+    query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='DECLINED';"
+    result = connector.fetch_data(query, ('4442',))
+
+    # Проверяем, что результат ненулевой и первая запись содержит значение больше 0
+    if len(result) == 0:
+        assert False, "Запрос к базе данных вернул нулевое количество записей."
+    elif result[0][0] <= 0:
+        assert False, "Запись о платеже не найдена в базе данных!"
+    else:
+        assert True, "Запись о платеже найдена в базе данных."
 
 @allure.epic("Негативные сценарии")
 @allure.title("Тестирование оплаты тура с кредитом")
@@ -1557,6 +1623,9 @@ def test_empty_field_cvv_credit(driver):
     error_message = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[3]')
     assert "Поле обязательно для заполнения" in error_message.text, "Ошибка не появилась или текст не соответствует ожиданию."
 
+@allure.epic("Негативные сценарии")
+@allure.title("Тестирование оплаты тура с кредитом")
+@allure.description("Тест 2.24: Проверка записи в базу данных")
 # Тест 2.24: Проверка записи в базу данных
 def test_database_by_invalid_card_credit(driver):
     # Переходим на страницу
