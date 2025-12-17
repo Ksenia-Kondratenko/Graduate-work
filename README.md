@@ -1,25 +1,27 @@
 # Описание проекта
-Проект по автоматизированному тестированию Java-приложения оплаты тура, с использованием Selenium и Allure Framework. Проект содержит UI-тесты, проверку базы данных и формирование отчетов в формате Allure.
+Проект по автоматизированному тестированию Java-приложения оплаты тура, с использованием Selenium и визуализацией результатов с помощью Allure Framework. Проект содержит UI-тесты, проверку базы данных и формирование отчетов в формате Allure.
+
 ## Инструкция по запуску
 1. Установите необходимые инструменты:
 - Docker и Docker Compose;
-- Python 3.13.
+- Python выше 3.8;
+- браузер Chrome (для выполнения тестов через Selenium)
 
-2. Создайте виртуальное окружение:
+2. Создайте виртуальное окружение для изоляции зависимостей проекта:
 - Перейдите в директорию проекта;
-- Выполните команду: python -m venv venv;
-- Активируйте виртуальное окружение: для Linux/Mac - команда source venv/bin/activate; для Windows - команда venv\Scripts\activate;
+- Выполните команду: "python -m venv venv";
+- Активируйте виртуальное окружение: для Linux/Mac - команда "source venv/bin/activate"; для Windows - команда "venv\Scripts\activate";
 
-3. Установите зависимости из файла requirements.txt: команда pip install -r requirements.txt;
-
-
-4. Запустите контейнеры с помощью Docker Compose: команда docker-compose up -d;
+3. Установите зависимости из файла requirements.txt: команда "pip install -r requirements.txt";
 
 
-5. Запустите автотесты с генерацией отчетов Allure: команда pytest --alluredir=allure-results;
+4. Запустите контейнеры с помощью Docker Compose: команда "docker-compose up -d";
 
 
-6. Просмотрите отчёт Allure: команда allure serve allure-results.
+5. Запустите автотесты с генерацией отчетов Allure: команда "pytest --alluredir=allure-results";
+
+
+6. После завершения тестов сгенерируйте отчёт с помощью Allure: команда "allure serve allure-results".
 
 
 
