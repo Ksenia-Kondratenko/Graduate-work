@@ -25,13 +25,17 @@ jobs:
           pip install -r requirements.txt
           pip install allure-pytest
 
+      - name: Clean Docker cache
+        run: |
+          docker system prune -af
+
       - name: Run tests and collect Allure reports
         run: |
           python -m pytest --alluredir=allure-results
 
       - name: Generate Allure report using Docker
         run: |
-          docker run --rm -v ${{ github.workspace }}/allure-results:/allure-results adiral/allure-docker-service:latest generate --clean -o allure-report
+          docker run --rm -v ${{ github.workspace }}/allure-results:/allure-results adiral/allure-docker-service:2.13.1 generate --clean -o allure-report
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
