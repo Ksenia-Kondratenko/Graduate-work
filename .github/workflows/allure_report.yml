@@ -25,10 +25,6 @@ jobs:
           pip install -r requirements.txt
           pip install allure-pytest
 
-      - name: Clean Docker cache
-        run: |
-          docker system prune -af
-
       - name: Run tests and collect Allure reports
         run: |
           python -m pytest --alluredir=allure-results
@@ -43,10 +39,8 @@ jobs:
           name: allure-report
           path: allure-report
 
-      - name: Publish Allure report to GitHub Pages
+      - name: Deploy Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
-        env:
-          PUBLISH_BRANCH: gh-pages
-          PUBLISH_DIR: allure-report
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
