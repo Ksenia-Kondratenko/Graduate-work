@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -25,21 +25,21 @@ jobs:
           pip install -r requirements.txt
           pip install allure-pytest
 
-      - name: Run tests with Allure
+      - name: Run tests and collect Allure reports
         run: |
           python -m pytest --alluredir=allure-results
 
-      - name: Generate Allure Report using Docker
+      - name: Generate Allure report using Docker
         run: |
           docker run --rm -v ${{ github.workspace }}/allure-results:/allure-results adiral/allure-docker-service:latest generate --clean -o allure-report
 
-      - name: Archive Artifacts
+      - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report
 
-      - name: Deploy Allure report to GitHub Pages
+      - name: Publish Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         env:
           PUBLISH_BRANCH: gh-pages
