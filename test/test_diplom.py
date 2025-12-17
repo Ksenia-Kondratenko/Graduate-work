@@ -1115,7 +1115,7 @@ def test_empty_field_cvv(driver):
 
         owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
         owner_input.clear()
-        owner_input.send_keys('555')
+        owner_input.send_keys('DENIS IVANOV')
 
         cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
         cvc_input.clear()
