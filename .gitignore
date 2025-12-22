@@ -2,3 +2,4 @@ allure-results/
 .venv/
 .idea/
 __pycache__/
+*.pyc
