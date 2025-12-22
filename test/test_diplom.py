@@ -5,7 +5,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from .database import DBConnector
+from test.utils.database import DBConnector
+from .data.card_data import CardData
 
 
 @pytest.fixture
@@ -36,7 +37,7 @@ def test_payment_with_a_valid_card(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -83,7 +84,7 @@ def test_valid_data_card_number(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -129,7 +130,7 @@ def test_valid_data_month(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -175,7 +176,7 @@ def test_valid_data_year(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -221,7 +222,7 @@ def test_valid_data_owner(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -267,7 +268,7 @@ def test_valid_data_cvc(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -313,7 +314,7 @@ def test_database_presence_rec_valid_card(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -374,7 +375,7 @@ def test_database_absence_card_data(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -435,7 +436,7 @@ def test_valid_credit(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -481,7 +482,7 @@ def test_valid_data_credit_card_number(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -527,7 +528,7 @@ def test_valid_data_credit_month(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -573,7 +574,7 @@ def test_valid_data_credit_year(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -619,7 +620,7 @@ def test_valid_data_credit_owner(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -665,7 +666,7 @@ def test_valid_data_credit_cvc(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -711,7 +712,7 @@ def test_database_presence_rec_valid_card_credit(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -776,7 +777,7 @@ def test_database_absence_card_data_credit(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -838,7 +839,7 @@ def test_payment_by_invalid_card(driver):
     with allure.step("Находим поля ввода и заполняем их валидными данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444442')
+        card_number_input.send_keys(CardData.INVALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -999,7 +1000,7 @@ def test_empty_field_month(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444 4444 4444 4441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1083,7 +1084,7 @@ def test_empty_field_year(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444 4444 4444 4441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1154,7 +1155,7 @@ def test_empty_field_owner(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444 4444 4444 4441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1225,7 +1226,7 @@ def test_empty_field_cvv(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444 4444 4444 4441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1265,7 +1266,7 @@ def test_database_by_invalid_card(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444442')
+        card_number_input.send_keys(CardData.INVALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1330,7 +1331,7 @@ def test_payment_by_invalid_card_credit(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444442')
+        card_number_input.send_keys(CardData.INVALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1491,7 +1492,7 @@ def test_empty_field_month_credit(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444 4444 4444 4441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1576,7 +1577,7 @@ def test_empty_field_year_credit(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444 4444 4444 4441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1647,7 +1648,7 @@ def test_empty_field_owner_credit(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444 4444 4444 4441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1718,7 +1719,7 @@ def test_empty_field_cvv_credit(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444 4444 4444 4441')
+        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
@@ -1758,7 +1759,7 @@ def test_database_by_invalid_card_credit(driver):
     with allure.step("Находим поля ввода и заполняем их данными"):
         card_number_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
         card_number_input.clear()
-        card_number_input.send_keys('4444444444444442')
+        card_number_input.send_keys(CardData.INVALID_CARD_NUMBER)
 
         month_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
