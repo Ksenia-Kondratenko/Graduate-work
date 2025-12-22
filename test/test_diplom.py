@@ -342,7 +342,7 @@ def test_database_presence_rec_valid_card(driver):
 
     with allure.step("Проверяем наличие записи в базе данных"):
         connector = DBConnector(
-            host='mysql_db',
+            host='localhost',
             port=3306,
             user='app',
             password='pass',
@@ -360,9 +360,70 @@ def test_database_presence_rec_valid_card(driver):
             assert True, "Запись о платеже найдена в базе данных."
 
 @allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.8: Проверка отсутствия данных карты в базе данных")
+# Тест 1.8: Проверка отсутствия данных карты в базе данных
+def test_database_absence_card_data(driver):
+    with allure.step("Переходим на страницу"):
+        driver.get("http://localhost:8080/")
+
+    with allure.step("Находим и нажимаем кнопку 'Купить'"):
+        buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
+        buy_button.click()
+
+    with allure.step("Находим поля ввода и заполняем их валидными данными"):
+        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+        card_number_input.clear()
+        card_number_input.send_keys('4444444444444441')
+
+        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+        month_input.clear()
+        month_input.send_keys('07')
+
+        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+        year_input.clear()
+        year_input.send_keys('26')
+
+        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+        owner_input.clear()
+        owner_input.send_keys('DENIS IVANOV')
+
+        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+        cvc_input.clear()
+        cvc_input.send_keys('555')
+
+    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
+        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+        continue_button.click()
+
+    with allure.step("Ожидаем появления уведомления об успешной оплате"):
+        wait = WebDriverWait(driver, 15)
+        success_notification = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'notification_status_ok')))
+        assert "Операция одобрена Банком." in success_notification.text
+
+    with allure.step("Проверяем отсутствие данных карты в базе данных"):
+        connector = DBConnector(
+            host='localhost',
+            port=3306,
+            user='app',
+            password='pass',
+            db='app'
+        )
+        query = "SELECT COUNT(*) FROM payment_entity WHERE card_number LIKE '%4444%' OR cvc IS NOT NULL;"
+        result = connector.fetch_data(query)
+
+    with allure.step("Проверяем, что запрос вернул 0 записей"):
+        if len(result) == 0:
+            assert False, "Запрос к базе данных вернул нулевое количество записей."
+        elif result[0][0] > 0:
+            assert False, "В базе данных обнаружены данные карты"
+        else:
+            assert True, "Данные карты не обнаружены в базе данных."
+
+@allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 1.8: Оплата тура с получением кредита по валидной карте 'APPROVED'")
-# Тест 1.8: Оплата тура с получением кредита по валидной карте "APPROVED":
+@allure.description("Тест 1.9: Оплата тура с получением кредита по валидной карте 'APPROVED'")
+# Тест 1.9: Оплата тура с получением кредита по валидной карте "APPROVED":
 def test_valid_credit(driver):
     with allure.step("Переходим на страницу"):
         driver.get("http://localhost:8080/")
@@ -407,8 +468,8 @@ def test_valid_credit(driver):
 
 @allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 1.9: Ввод валидных данных в поле 'Номер карты'")
-# Тест 1.9: Ввод валидных данных в поле "Номер карты":
+@allure.description("Тест 1.10: Ввод валидных данных в поле 'Номер карты'")
+# Тест 1.10: Ввод валидных данных в поле "Номер карты":
 def test_valid_data_credit_card_number(driver):
     with allure.step("Переходим на страницу"):
         driver.get("http://localhost:8080/")
@@ -453,8 +514,8 @@ def test_valid_data_credit_card_number(driver):
 
 @allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 1.10: Ввод валидных данных в поле 'Месяц'")
-# Тест 1.10: Ввод валидных данных в поле "Месяц":
+@allure.description("Тест 1.11: Ввод валидных данных в поле 'Месяц'")
+# Тест 1.11: Ввод валидных данных в поле "Месяц":
 def test_valid_data_credit_month(driver):
     with allure.step("Переходим на страницу"):
         driver.get("http://localhost:8080/")
@@ -499,8 +560,8 @@ def test_valid_data_credit_month(driver):
 
 @allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 1.11: Ввод валидных данных в поле 'Год'")
-# Тест 1.11: Ввод валидных данных в поле "Год":
+@allure.description("Тест 1.12: Ввод валидных данных в поле 'Год'")
+# Тест 1.12: Ввод валидных данных в поле "Год":
 def test_valid_data_credit_year(driver):
     with allure.step("Переходим на страницу"):
         driver.get("http://localhost:8080/")
@@ -545,8 +606,8 @@ def test_valid_data_credit_year(driver):
 
 @allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 1.12: Ввод валидных данных в поле 'Владелец'")
-# Тест 1.12: Ввод валидных данных в поле "Владелец":
+@allure.description("Тест 1.13: Ввод валидных данных в поле 'Владелец'")
+# Тест 1.13: Ввод валидных данных в поле "Владелец":
 def test_valid_data_credit_owner(driver):
     with allure.step("Переходим на страницу"):
         driver.get("http://localhost:8080/")
@@ -591,8 +652,8 @@ def test_valid_data_credit_owner(driver):
 
 @allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 1.13: Ввод валидных данных в поле 'CVC/CVV'")
-# Тест 1.13: Ввод валидных данных в поле "CVC/CVV":
+@allure.description("Тест 1.14: Ввод валидных данных в поле 'CVC/CVV'")
+# Тест 1.14: Ввод валидных данных в поле "CVC/CVV":
 def test_valid_data_credit_cvc(driver):
     with allure.step("Переходим на страницу"):
         driver.get("http://localhost:8080/")
@@ -637,8 +698,8 @@ def test_valid_data_credit_cvc(driver):
 
 @allure.epic("Позитивные сценарии")
 @allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 1.14: Проверка записи в базу данных")
-# Тест 1.14: Проверка записи в базу данных
+@allure.description("Тест 1.15: Проверка записи в базу данных")
+# Тест 1.15: Проверка записи в базу данных
 def test_database_presence_rec_valid_card_credit(driver):
     with allure.step("Переходим на страницу"):
         driver.get("http://localhost:8080/")
@@ -683,7 +744,7 @@ def test_database_presence_rec_valid_card_credit(driver):
 
     with allure.step("Проверяем наличие записи в базе данных"):
         connector = DBConnector(
-            host='mysql_db',
+            host='localhost',
             port=3306,
             user='app',
             password='pass',
@@ -699,6 +760,67 @@ def test_database_presence_rec_valid_card_credit(driver):
             assert False, "Запись о платеже не найдена в базе данных"
         else:
             assert True, "Запись о платеже найдена в базе данных."
+
+@allure.epic("Позитивные сценарии")
+@allure.title("Тестирование оплаты тура по дебетовой карте")
+@allure.description("Тест 1.16: Проверка отсутствия данных карты в базе данных при оплате с кредитом")
+# Тест 1.16: Проверка отсутствия данных карты в базе данных
+def test_database_absence_card_data_credit(driver):
+    with allure.step("Переходим на страницу"):
+        driver.get("http://localhost:8080/")
+
+    with allure.step("Находим и нажимаем кнопку 'Купить в кредит'"):
+        buy_credit_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
+        buy_credit_button.click()
+
+    with allure.step("Находим поля ввода и заполняем их валидными данными"):
+        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
+        card_number_input.clear()
+        card_number_input.send_keys('4444444444444441')
+
+        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
+        month_input.clear()
+        month_input.send_keys('07')
+
+        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
+        year_input.clear()
+        year_input.send_keys('26')
+
+        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
+        owner_input.clear()
+        owner_input.send_keys('DENIS IVANOV')
+
+        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
+        cvc_input.clear()
+        cvc_input.send_keys('555')
+
+    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
+        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
+        continue_button.click()
+
+    with allure.step("Ожидаем появления уведомления об успешной оплате"):
+        wait = WebDriverWait(driver, 15)
+        success_notification = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'notification_status_ok')))
+        assert "Операция одобрена Банком." in success_notification.text
+
+    with allure.step("Проверяем отсутствие полных данных карты в базе данных"):
+        connector = DBConnector(
+            host='localhost',
+            port=3306,
+            user='app',
+            password='pass',
+            db='app'
+        )
+        query = "SELECT COUNT(*) FROM payment_entity WHERE card_number LIKE '%4444%' OR cvc IS NOT NULL;"
+        result = connector.fetch_data(query)
+
+    with allure.step("Проверяем, что запрос вернул 0 записей"):
+        if len(result) == 0:
+            assert False, "Запрос к базе данных вернул нулевое количество записей."
+        elif result[0][0] > 0:
+            assert False, "В базе данных обнаружены данные карты"
+        else:
+            assert True, "Данные карты не обнаружены в базе данных."
 
 @allure.epic("Негативные сценарии")
 @allure.title("Тестирование оплаты тура по дебетовой карте")
@@ -1176,7 +1298,7 @@ def test_database_by_invalid_card(driver):
 
     with allure.step("Проверяем наличие записи в базе данных"):
         connector = DBConnector(
-            host='mysql_db',
+            host='localhost',
             port=3306,
             user='app',
             password='pass',
@@ -1669,7 +1791,7 @@ def test_database_by_invalid_card_credit(driver):
 
     with allure.step("Проверяем запись в базе данных"):
         connector = DBConnector(
-            host='mysql_db',
+            host='localhost',
             port=3306,
             user='app',
             password='pass',
