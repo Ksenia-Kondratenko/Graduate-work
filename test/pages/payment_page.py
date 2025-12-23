@@ -100,7 +100,7 @@ class PaymentPage:
         return month_field.get_attribute('value')
 
     def get_error_message_for_month(self):
-        # Возвращает текст ошибки для поля месяца
+        # Возвращает текст ошибки для поля месяца (Тест 2.5)
         error_element = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
         return error_element.text
 
@@ -116,7 +116,7 @@ class PaymentPage:
         return year_field.get_attribute('value')
 
     def get_error_message_for_year(self):
-        # Возвращаем текст ошибки для поля года
+        # Возвращаем текст ошибки для поля года (Тест 2.7)
         error_element = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
         return error_element.text
 
@@ -132,7 +132,7 @@ class PaymentPage:
         return owner_field.get_attribute('value')
 
     def get_error_message_for_owner(self):
-        # Возвращаем текст ошибки для поля владельца
+        # Возвращаем текст ошибки для поля владельца (Тест 2.9)
         error_element = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[3]')
         return error_element.text
 
@@ -148,13 +148,33 @@ class PaymentPage:
         return cvc_field.get_attribute('value')
 
     def get_error_message_for_cvc(self):
-        # Возвращаем текст ошибки для поля CVV/CVC
+        # Возвращаем текст ошибки для поля CVV/CVC (Тест 2.11)
         error_element = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[3]')
         return error_element.text
 
     def get_error_message_for_card_number_credit(self):
         # Возвращаем текст ошибки для поля номера карты (Тест 2.15)
         error_element = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[3]')
+        return error_element.text
+
+    def get_error_message_for_month_credit(self):
+        # Возвращает текст ошибки для поля месяц (Тест 2.17)
+        error_element = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[3]')
+        return error_element.text
+
+    def get_error_message_for_year_credit(self):
+        # Возвращает текст ошибки для поля года (Тест 2.19)
+        error_element = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[3]')
+        return error_element.text
+
+    def get_error_message_for_owner_credit(self):
+        # Возвращает текст ошибки для поля владельца (Тест 2.21)
+        error_element = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[3]')
+        return error_element.text
+
+    def get_error_message_for_cvc_credit(self):
+        # Возвращает текст ошибки для поля CVV/CVC (Тест 2.23)
+        error_element = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[3]')
         return error_element.text
 
     def get_text_from_xpath(self, xpath):

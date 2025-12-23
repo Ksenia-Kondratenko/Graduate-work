@@ -27,7 +27,7 @@ def payment_page(driver):
     return PaymentPage(driver)
 
 @pytest.mark.usefixtures("clear_database")
-class TestPayment:
+class TestValidPayments:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 1.1: Оплата тура с валидной картой 'APPROVED'")
@@ -54,8 +54,6 @@ class TestPayment:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestValidPayments:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 1.2: Ввод валидных данных в поле 'Номер карты'")
@@ -76,8 +74,6 @@ class TestValidPayments:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestValidPayments:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 1.3: Ввод валидных данных в поле 'Месяц'")
@@ -98,8 +94,6 @@ class TestValidPayments:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestValidPayments:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 1.4: Ввод валидных данных в поле 'Год'")
@@ -120,8 +114,6 @@ class TestValidPayments:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestValidPayments:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 1.5: Ввод валидных данных в поле 'Владелец'")
@@ -142,8 +134,6 @@ class TestValidPayments:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestValidPayments:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 1.6: Ввод валидных данных в поле 'CVC/CVV'")
@@ -164,128 +154,83 @@ class TestValidPayments:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@allure.epic("Позитивные сценарии")
-@allure.title("Тестирование оплаты тура по дебетовой карте")
-@allure.description("Тест 1.7: Проверка записи в базу данных")
-# Тест 1.7: Проверка записи в базу данных
-def test_database_presence_rec_valid_card(driver):
-    with allure.step("Переходим на страницу"):
-        driver.get("http://localhost:8080/")
+    @allure.epic("Позитивные сценарии")
+    @allure.title("Тестирование оплаты тура по дебетовой карте")
+    @allure.description("Тест 1.7: Проверка записи в базу данных")
+    def test_database_presence_rec_valid_card(self, payment_page):
+        with allure.step("Переходим на страницу и производим оплату валидной картой"):
+            payment_page.open()
+            payment_page.click_buy_button()
+            payment_page.fill_form(
+                CardData.VALID_CARD_NUMBER,
+                CardData.VALID_MONTH,
+                CardData.VALID_YEAR,
+                CardData.VALID_OWNER,
+                CardData.VALID_CVC
+            )
+            payment_page.submit_form()
 
-    with allure.step("Находим и нажимаем кнопку 'Купить'"):
-        buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
-        buy_button.click()
+        with allure.step("Проверяем успешную оплату"):
+            notification_text = payment_page.verify_successful_payment()
+            assert "Операция одобрена Банком." in notification_text
 
-    with allure.step("Находим поля ввода и заполняем их валидными данными"):
-        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-        card_number_input.clear()
-        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
+        with allure.step("Проверяем наличие записи в базе данных"):
+            connector = DBConnector(
+                host='localhost',
+                port=3306,
+                user='app',
+                password='pass',
+                db='app'
+            )
+            query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='APPROVED';"
+            result = connector.fetch_data(query,('4441',))
 
-        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
-        month_input.clear()
-        month_input.send_keys('07')
+        with allure.step("Проверяем, что результат ненулевой и первая запись содержит значение больше 0"):
+            if len(result) == 0:
+                assert False, "Запрос к базе данных вернул нулевое количество записей."
+            elif result[0][0] <= 0:
+                assert False, "Запись о платеже не найдена в базе данных"
+            else:
+                assert True, "Запись о платеже найдена в базе данных."
 
-        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
-        year_input.clear()
-        year_input.send_keys('26')
+    @allure.epic("Позитивные сценарии")
+    @allure.title("Тестирование оплаты тура по дебетовой карте")
+    @allure.description("Тест 1.8: Проверка отсутствия данных карты в базе данных")
+    def test_database_absence_card_data(self, payment_page):
+        with allure.step("Переходим на страницу и производим оплату валидной картой"):
+            payment_page.open()
+            payment_page.click_buy_button()
+            payment_page.fill_form(
+                CardData.VALID_CARD_NUMBER,
+                CardData.VALID_MONTH,
+                CardData.VALID_YEAR,
+                CardData.VALID_OWNER,
+                CardData.VALID_CVC
+            )
+            payment_page.submit_form()
 
-        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
-        owner_input.clear()
-        owner_input.send_keys('DENIS IVANOV')
+        with allure.step("Проверяем успешную оплату"):
+            notification_text = payment_page.verify_successful_payment()
+            assert "Операция одобрена Банком." in notification_text
 
-        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
-        cvc_input.clear()
-        cvc_input.send_keys('555')
+        with allure.step("Проверяем отсутствие данных карты в базе данных"):
+            connector = DBConnector(
+                host='localhost',
+                port=3306,
+                user='app',
+                password='pass',
+                db='app'
+            )
+            query = "SELECT COUNT(*) FROM payment_entity WHERE card_number LIKE '%4444%' OR cvc IS NOT NULL;"
+            result = connector.fetch_data(query)
 
-    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
-        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
-        continue_button.click()
-
-    with allure.step("Ожидаем появления уведомления об успешной оплате"):
-        wait = WebDriverWait(driver, 15)
-        success_notification = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'notification_status_ok')))
-        assert "Операция одобрена Банком." in success_notification.text
-
-    with allure.step("Проверяем наличие записи в базе данных"):
-        connector = DBConnector(
-            host='localhost',
-            port=3306,
-            user='app',
-            password='pass',
-            db='app'
-        )
-        query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='APPROVED';"
-        result = connector.fetch_data(query, ('4441',))
-
-    with allure.step("Проверяем, что результат ненулевой и первая запись содержит значение больше 0"):
-        if len(result) == 0:
-            assert False, "Запрос к базе данных вернул нулевое количество записей."
-        elif result[0][0] <= 0:
-            assert False, "Запись о платеже не найдена в базе данных"
-        else:
-            assert True, "Запись о платеже найдена в базе данных."
-
-@allure.epic("Позитивные сценарии")
-@allure.title("Тестирование оплаты тура по дебетовой карте")
-@allure.description("Тест 1.8: Проверка отсутствия данных карты в базе данных")
-# Тест 1.8: Проверка отсутствия данных карты в базе данных
-def test_database_absence_card_data(driver):
-    with allure.step("Переходим на страницу"):
-        driver.get("http://localhost:8080/")
-
-    with allure.step("Находим и нажимаем кнопку 'Купить'"):
-        buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
-        buy_button.click()
-
-    with allure.step("Находим поля ввода и заполняем их валидными данными"):
-        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-        card_number_input.clear()
-        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
-
-        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
-        month_input.clear()
-        month_input.send_keys('07')
-
-        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
-        year_input.clear()
-        year_input.send_keys('26')
-
-        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
-        owner_input.clear()
-        owner_input.send_keys('DENIS IVANOV')
-
-        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
-        cvc_input.clear()
-        cvc_input.send_keys('555')
-
-    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
-        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
-        continue_button.click()
-
-    with allure.step("Ожидаем появления уведомления об успешной оплате"):
-        wait = WebDriverWait(driver, 15)
-        success_notification = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'notification_status_ok')))
-        assert "Операция одобрена Банком." in success_notification.text
-
-    with allure.step("Проверяем отсутствие данных карты в базе данных"):
-        connector = DBConnector(
-            host='localhost',
-            port=3306,
-            user='app',
-            password='pass',
-            db='app'
-        )
-        query = "SELECT COUNT(*) FROM payment_entity WHERE card_number LIKE '%4444%' OR cvc IS NOT NULL;"
-        result = connector.fetch_data(query)
-
-    with allure.step("Проверяем, что запрос вернул 0 записей"):
-        if len(result) == 0:
-            assert False, "Запрос к базе данных вернул нулевое количество записей."
-        elif result[0][0] > 0:
-            assert False, "В базе данных обнаружены данные карты"
-        else:
-            assert True, "Данные карты не обнаружены в базе данных."
-
+        with allure.step("Проверяем, что запрос вернул 0 записей"):
+            if len(result) == 0:
+                assert False, "Запрос к базе данных вернул нулевое количество записей."
+            elif result[0][0] > 0:
+                assert False, "В базе данных обнаружены данные карты"
+            else:
+                assert True, "Данные карты не обнаружены в базе данных."
 
 @pytest.mark.usefixtures("clear_database")
 class TestCreditPurchase:
@@ -315,8 +260,6 @@ class TestCreditPurchase:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestCreditPurchase:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 1.10: Ввод валидных данных в поле 'Номер карты'")
@@ -337,8 +280,6 @@ class TestCreditPurchase:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestCreditPurchase:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 1.11: Ввод валидных данных в поле 'Месяц'")
@@ -359,8 +300,6 @@ class TestCreditPurchase:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestCreditPurchase:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 1.12: Ввод валидных данных в поле 'Год'")
@@ -381,8 +320,6 @@ class TestCreditPurchase:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestCreditPurchase:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 1.13: Ввод валидных данных в поле 'Владелец'")
@@ -403,8 +340,6 @@ class TestCreditPurchase:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestCreditPurchase:
     @allure.epic("Позитивные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 1.14: Ввод валидных данных в поле 'CVC/CVV'")
@@ -425,131 +360,83 @@ class TestCreditPurchase:
             notification_text = payment_page.verify_successful_payment()
             assert "Операция одобрена Банком." in notification_text
 
-@allure.epic("Позитивные сценарии")
-@allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 1.15: Проверка записи в базу данных")
-# Тест 1.15: Проверка записи в базу данных
-def test_database_presence_rec_valid_card_credit(driver):
-    with allure.step("Переходим на страницу"):
-        driver.get("http://localhost:8080/")
+    @allure.epic("Позитивные сценарии")
+    @allure.title("Тестирование оплаты тура с кредитом")
+    @allure.description("Тест 1.15: Проверка записи в базу данных")
+    def test_database_presence_rec_valid_card_credit(self, payment_page):
+        with allure.step("Переходим на страницу и производим оплату валидной картой в кредит"):
+            payment_page.open()
+            payment_page.click_buy_credit_button()
+            payment_page.fill_form(
+                CardData.VALID_CARD_NUMBER,
+                CardData.VALID_MONTH,
+                CardData.VALID_YEAR,
+                CardData.VALID_OWNER,
+                CardData.VALID_CVC
+            )
+            payment_page.submit_form()
 
-    with allure.step("Находим и нажимаем кнопку 'Купить в кредит'"):
-        buy_credit_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
-        buy_credit_button.click()
+        with allure.step("Проверяем успешную оплату"):
+            notification_text = payment_page.verify_successful_payment()
+            assert "Операция одобрена Банком." in notification_text
 
-    with allure.step("Находим поля ввода и заполняем их валидными данными"):
-        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-        card_number_input.clear()
-        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
+        with allure.step("Проверяем наличие записи в базе данных"):
+            connector = DBConnector(
+                host='localhost',
+                port=3306,
+                user='app',
+                password='pass',
+                db='app'
+            )
+            query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='APPROVED';"
+            result = connector.fetch_data(query, ('4441',))
 
-        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
-        month_input.clear()
-        month_input.send_keys('07')
+        with allure.step("Проверяем, что результат ненулевой и первая запись содержит значение больше 0"):
+            if len(result) == 0:
+                assert False, "Запрос к базе данных вернул нулевое количество записей."
+            elif result[0][0] <= 0:
+                assert False, "Запись о платеже не найдена в базе данных"
+            else:
+                assert True, "Запись о платеже найдена в базе данных."
 
-        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
-        year_input.clear()
-        year_input.send_keys('26')
+    @allure.epic("Позитивные сценарии")
+    @allure.title("Тестирование оплаты тура по дебетовой карте")
+    @allure.description("Тест 1.16: Проверка отсутствия данных карты в базе данных при оплате с кредитом")
+    def test_database_absence_card_data_credit(self, payment_page):
+        with allure.step("Переходим на страницу и производим оплату валидной картой в кредит"):
+            payment_page.open()
+            payment_page.click_buy_credit_button()
+            payment_page.fill_form(
+                CardData.VALID_CARD_NUMBER,
+                CardData.VALID_MONTH,
+                CardData.VALID_YEAR,
+                CardData.VALID_OWNER,
+                CardData.VALID_CVC
+            )
+            payment_page.submit_form()
 
-        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
-        owner_input.clear()
-        owner_input.send_keys('DENIS IVANOV')
+        with allure.step("Проверяем успешную оплату"):
+            notification_text = payment_page.verify_successful_payment()
+            assert "Операция одобрена Банком." in notification_text
 
-        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
-        cvc_input.clear()
-        cvc_input.send_keys('555')
+        with allure.step("Проверяем отсутствие полных данных карты в базе данных"):
+            connector = DBConnector(
+                host='localhost',
+                port=3306,
+                user='app',
+                password='pass',
+                db='app'
+            )
+            query = "SELECT COUNT(*) FROM payment_entity WHERE card_number LIKE '%4444%' OR cvc IS NOT NULL;"
+            result = connector.fetch_data(query)
 
-    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
-        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
-        continue_button.click()
-
-    with allure.step("Ожидаем появления уведомления об успешной оплате"):
-        wait = WebDriverWait(driver, 15)
-        success_notification = wait.until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_ok')))
-
-    with allure.step("Проверяем текст уведомления"):
-        notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
-        assert "Операция одобрена Банком." in notification_text
-
-    with allure.step("Проверяем наличие записи в базе данных"):
-        connector = DBConnector(
-            host='localhost',
-            port=3306,
-            user='app',
-            password='pass',
-            db='app'
-        )
-        query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='APPROVED';"
-        result = connector.fetch_data(query, ('4441',))
-
-    with allure.step("Проверяем, что результат ненулевой и первая запись содержит значение больше 0"):
-        if len(result) == 0:
-            assert False, "Запрос к базе данных вернул нулевое количество записей."
-        elif result[0][0] <= 0:
-            assert False, "Запись о платеже не найдена в базе данных"
-        else:
-            assert True, "Запись о платеже найдена в базе данных."
-
-@allure.epic("Позитивные сценарии")
-@allure.title("Тестирование оплаты тура по дебетовой карте")
-@allure.description("Тест 1.16: Проверка отсутствия данных карты в базе данных при оплате с кредитом")
-# Тест 1.16: Проверка отсутствия данных карты в базе данных
-def test_database_absence_card_data_credit(driver):
-    with allure.step("Переходим на страницу"):
-        driver.get("http://localhost:8080/")
-
-    with allure.step("Находим и нажимаем кнопку 'Купить в кредит'"):
-        buy_credit_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
-        buy_credit_button.click()
-
-    with allure.step("Находим поля ввода и заполняем их валидными данными"):
-        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-        card_number_input.clear()
-        card_number_input.send_keys(CardData.VALID_CARD_NUMBER)
-
-        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
-        month_input.clear()
-        month_input.send_keys('07')
-
-        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
-        year_input.clear()
-        year_input.send_keys('26')
-
-        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
-        owner_input.clear()
-        owner_input.send_keys('DENIS IVANOV')
-
-        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
-        cvc_input.clear()
-        cvc_input.send_keys('555')
-
-    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
-        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
-        continue_button.click()
-
-    with allure.step("Ожидаем появления уведомления об успешной оплате"):
-        wait = WebDriverWait(driver, 15)
-        success_notification = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'notification_status_ok')))
-        assert "Операция одобрена Банком." in success_notification.text
-
-    with allure.step("Проверяем отсутствие полных данных карты в базе данных"):
-        connector = DBConnector(
-            host='localhost',
-            port=3306,
-            user='app',
-            password='pass',
-            db='app'
-        )
-        query = "SELECT COUNT(*) FROM payment_entity WHERE card_number LIKE '%4444%' OR cvc IS NOT NULL;"
-        result = connector.fetch_data(query)
-
-    with allure.step("Проверяем, что запрос вернул 0 записей"):
-        if len(result) == 0:
-            assert False, "Запрос к базе данных вернул нулевое количество записей."
-        elif result[0][0] > 0:
-            assert False, "В базе данных обнаружены данные карты"
-        else:
-            assert True, "Данные карты не обнаружены в базе данных."
+        with allure.step("Проверяем, что запрос вернул 0 записей"):
+            if len(result) == 0:
+                assert False, "Запрос к базе данных вернул нулевое количество записей."
+            elif result[0][0] > 0:
+                assert False, "В базе данных обнаружены данные карты"
+            else:
+                assert True, "Данные карты не обнаружены в базе данных."
 
 @pytest.mark.usefixtures("clear_database")
 class TestInvalidPayments:
@@ -574,15 +461,13 @@ class TestInvalidPayments:
             expected_text = "Ошибка! Банк отказал в проведении операции."
             assert expected_text in notification_text, f"Фактический текст уведомления: '{notification_text}', ожидаемый: '{expected_text}'"
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.2: Ввод невалидных данных в поле 'Номер карты'")
     @pytest.mark.parametrize("test_string", [
-        "aaa",           # Буквы
-        "!#$%",          # Спецсимволы
-        " ",             # Пробел
+        "aaa",
+        "!#$%",
+        " ",
     ])
     def test_invalid_data_card_number(self, payment_page, test_string):
         with allure.step("Переходим на страницу и начинаем оформление оплаты"):
@@ -596,8 +481,6 @@ class TestInvalidPayments:
             updated_value = payment_page.get_card_number_value()
             assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.3: Ввод невалидных данных в поле 'Номер карты' (пустое поле)")
@@ -607,9 +490,9 @@ class TestInvalidPayments:
             payment_page.click_buy_button()
 
         with allure.step("Оставляем поле 'Номер карты' пустым и заполняем остальные поля"):
-            payment_page.fill_card_number("")  # Оставляем поле пустым
+            payment_page.fill_card_number("")
             payment_page.fill_form(
-                "",  # Пустое поле номера карты
+                "",
                 CardData.VALID_MONTH,
                 CardData.VALID_YEAR,
                 CardData.VALID_OWNER,
@@ -623,8 +506,6 @@ class TestInvalidPayments:
             error_message = payment_page.get_error_message_for_card_number()
             assert "Неверный формат" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.4: Ввод невалидных данных в поле 'Месяц'")
@@ -656,8 +537,6 @@ class TestInvalidPayments:
                         error_message = payment_page.get_error_message_for_month()
                         assert "Неверно указан срок действия карты" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.5: Ввод невалидных данных в поле 'Месяц' (пустое поле)")
@@ -682,8 +561,6 @@ class TestInvalidPayments:
             error_message = payment_page.get_error_message_for_month()
             assert "Неверный формат" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.6: Ввод невалидных данных в поле 'Год'")
@@ -714,9 +591,6 @@ class TestInvalidPayments:
                         error_message = payment_page.get_error_message_for_year()
                         assert "Истёк срок действия карты" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.7: Ввод невалидных данных в поле 'Год' (пустое поле)")
@@ -741,15 +615,13 @@ class TestInvalidPayments:
             error_message = payment_page.get_error_message_for_year()
             assert "Неверный формат" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.8: Ввод невалидных данных в поле 'Владелец'")
     @pytest.mark.parametrize("test_string", [
-        "456",           # Цифры
-        "!#$%",          # Спецсимволы
-        " ",             # Пробел
+        "456",
+        "!#$%",
+        " ",
     ])
     def test_invalid_data_owner(self, payment_page, test_string):
         with allure.step("Переходим на страницу и начинаем оформление оплаты"):
@@ -764,13 +636,11 @@ class TestInvalidPayments:
             assert not any(char.isdigit() for char in updated_value), \
                 f"Поле принимает значение, отличное от букв. Текущее значение: '{updated_value}'"
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.9: Ввод невалидных данных в поле 'Владелец' (пустое поле)")
     def test_empty_field_owner(self, payment_page):
-        with allure.step("Переходим на страницу и начинаем оформление оплаты"):
+        with allure.step("Переходим на страницу и проводим оформление оплаты"):
             payment_page.open()
             payment_page.click_buy_button()
 
@@ -779,26 +649,24 @@ class TestInvalidPayments:
                 CardData.VALID_CARD_NUMBER,
                 CardData.VALID_MONTH,
                 CardData.VALID_YEAR,
-                '',  # Пустое поле владельца
+                '',
                 CardData.VALID_CVC
             )
 
-        with allure.step("Пытаемся отправить форму"):
+        with allure.step("Отправляем форму"):
             payment_page.submit_form()
 
         with allure.step("Ожидаем появления ошибки"):
             error_message = payment_page.get_error_message_for_owner()
             assert "Поле обязательно для заполнения" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.10: Ввод невалидных данных в поле 'CVV/CVC'")
     @pytest.mark.parametrize("test_string", [
-        "aaa",           # Буквы
-        "!#$%",          # Спецсимволы
-        " ",             # Пробел
+        "aaa",
+        "!#$%",
+        " ",
     ])
     def test_invalid_data_cvv(self, payment_page, test_string):
         with allure.step("Переходим на страницу и начинаем оформление оплаты"):
@@ -812,13 +680,11 @@ class TestInvalidPayments:
             updated_value = payment_page.get_cvc_value()
             assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура по дебетовой карте")
     @allure.description("Тест 2.11: Ввод невалидных данных в поле 'CVV/CVC' (пустое поле)")
     def test_empty_field_cvv(self, payment_page):
-        with allure.step("Переходим на страницу и начинаем оформление оплаты"):
+        with allure.step("Переходим на страницу и проводим оформление оплаты"):
             payment_page.open()
             payment_page.click_buy_button()
 
@@ -828,7 +694,7 @@ class TestInvalidPayments:
                 CardData.VALID_MONTH,
                 CardData.VALID_YEAR,
                 CardData.VALID_OWNER,
-                ''  # Пустое поле CVV/CVC
+                ''
             )
 
         with allure.step("Пытаемся отправить форму"):
@@ -838,70 +704,44 @@ class TestInvalidPayments:
             error_message = payment_page.get_error_message_for_cvc()
             assert "Поле обязательно для заполнения" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@allure.epic("Негативные сценарии")
-@allure.title("Тестирование оплаты тура по дебетовой карте")
-@allure.description("Тест 2.12: Проверка записи в базу данных")
-# Тест 2.12: Проверка записи в базу данных
-def test_database_by_invalid_card(driver):
-    with allure.step("Переходим на страницу"):
-        driver.get("http://localhost:8080/")
+    @allure.epic("Негативные сценарии")
+    @allure.title("Тестирование оплаты тура по дебетовой карте")
+    @allure.description("Тест 2.12: Проверка записи в базу данных")
+    def test_database_by_invalid_card(self, payment_page):
+        with allure.step("Переходим на страницу и производим оплату невалидной картой"):
+            payment_page.open()
+            payment_page.click_buy_button()
+            payment_page.fill_form(
+                CardData.INVALID_CARD_NUMBER,
+                CardData.VALID_MONTH,
+                CardData.VALID_YEAR,
+                CardData.VALID_OWNER,
+                CardData.VALID_CVC
+            )
+            payment_page.submit_form()
 
-    with allure.step("Находим и нажимаем кнопку 'Купить'"):
-        buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[1]')
-        buy_button.click()
+        with allure.step("Проверяем неуспешную оплату"):
+            notification_text = payment_page.verify_failed_payment()
+            assert "Ошибка! Банк отказал в проведении операции." in notification_text
 
-    with allure.step("Находим поля ввода и заполняем их данными"):
-        card_number_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-        card_number_input.clear()
-        card_number_input.send_keys(CardData.INVALID_CARD_NUMBER)
+        with allure.step("Проверяем наличие записи в базе данных"):
+            connector = DBConnector(
+                host='localhost',
+                port=3306,
+                user='app',
+                password='pass',
+                db='app'
+            )
+            query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='DECLINED';"
+            result = connector.fetch_data(query, ('4442',))
 
-        month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
-        month_input.clear()
-        month_input.send_keys('08')
-
-        year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
-        year_input.clear()
-        year_input.send_keys('26')
-
-        owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
-        owner_input.clear()
-        owner_input.send_keys('DENIS IVANOV')
-
-        cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
-        cvc_input.clear()
-        cvc_input.send_keys('555')
-
-    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
-        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
-        continue_button.click()
-
-    with allure.step("Ожидаем появления уведомления о неуспешной оплате"):
-        wait = WebDriverWait(driver, 15)
-        success_notification = wait.until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_error')))
-
-    with allure.step("Проверяем текст уведомления"):
-        notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
-        assert "Ошибка! Банк отказал в проведении операции." in notification_text
-
-    with allure.step("Проверяем наличие записи в базе данных"):
-        connector = DBConnector(
-            host='localhost',
-            port=3306,
-            user='app',
-            password='pass',
-            db='app'
-        )
-        query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='DECLINED';"
-        result = connector.fetch_data(query, ('4442',))
-
-    with allure.step("Проверяем, что результат ненулевой и первая запись содержит значение больше 0"):
-        if len(result) == 0:
-            assert False, "Запрос к базе данных вернул нулевое количество записей."
-        elif result[0][0] <= 0:
-            assert False, "Запись о платеже не найдена в базе данных!"
-        else:
-            assert True, "Запись о платеже найдена в базе данных."
+        with allure.step("Проверяем, что результат ненулевой и первая запись содержит значение больше 0"):
+            if len(result) == 0:
+                assert False, "Запрос к базе данных вернул нулевое количество записей."
+            elif result[0][0] <= 0:
+                assert False, "Запись о платеже не найдена в базе данных!"
+            else:
+                assert True, "Запись о платеже найдена в базе данных."
 
 @pytest.mark.usefixtures("clear_database")
 class TestInvalidCreditPayments:
@@ -909,7 +749,7 @@ class TestInvalidCreditPayments:
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.13: Оплата тура с получением кредита по невалидной карте 'DECLINED'")
     def test_payment_by_invalid_card_credit(self, payment_page):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит невалидной картой"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит невалидной картой"):
             payment_page.open()
             payment_page.click_buy_credit_button()
             payment_page.fill_form(
@@ -925,15 +765,13 @@ class TestInvalidCreditPayments:
             notification_text = payment_page.verify_failed_payment()
             assert "Ошибка! Банк отказал в проведении операции." in notification_text
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.14: Ввод невалидных данных в поле 'Номер карты'")
     @pytest.mark.parametrize("test_string", [
-        "aaa",           # Буквы
-        "!#$%",          # Спецсимволы
-        " ",             # Пробел
+        "aaa",
+        "!#$%",
+        " ",
     ])
     def test_invalid_data_card_number_credit(self, payment_page, test_string):
         with allure.step("Переходим на страницу и инициируем оплату в кредит"):
@@ -947,19 +785,17 @@ class TestInvalidCreditPayments:
             updated_value = payment_page.get_card_number_value()
             assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.15: Ввод невалидных данных в поле 'Номер карты' (пустое поле)")
     def test_empty_field_card_number_credit(self, payment_page):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
         with allure.step("Оставляем поле 'Номер карты' пустым и заполняем остальные поля"):
             payment_page.fill_form(
-                '',  # Пустое поле номера карты
+                '',
                 CardData.VALID_MONTH,
                 CardData.VALID_YEAR,
                 CardData.VALID_OWNER,
@@ -973,16 +809,14 @@ class TestInvalidCreditPayments:
             error_message = payment_page.get_error_message_for_card_number_credit()
             assert "Неверный формат" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.16: Ввод невалидных данных в поле 'Месяц'")
     @pytest.mark.parametrize("test_string", [
-        "aaa",           # Буквы
-        "!#$%",          # Спецсимволы
-        " ",             # Пробел
-        "13",            # Недопустимый месяц
+        "aaa",
+        "!#$%",
+        " ",
+        "13",
     ])
     def test_invalid_data_month_credit(self, payment_page, test_string):
         with allure.step("Переходим на страницу и инициируем оплату в кредит"):
@@ -1006,8 +840,6 @@ class TestInvalidCreditPayments:
                         error_message = payment_page.get_error_message_for_month()
                         assert "Неверно указан срок действия карты" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.17: Ввод невалидных данных в поле 'Месяц' (пустое поле)")
@@ -1019,32 +851,30 @@ class TestInvalidCreditPayments:
         with allure.step("Оставляем поле 'Месяц' пустым и заполняем остальные поля"):
             payment_page.fill_form(
                 CardData.VALID_CARD_NUMBER,
-                '',  # Пустое поле месяца
+                '',
                 CardData.VALID_YEAR,
                 CardData.VALID_OWNER,
                 CardData.VALID_CVC
             )
 
-        with allure.step("Пытаемся отправить форму"):
+        with allure.step("Отправляем форму"):
             payment_page.submit_form()
 
         with allure.step("Ожидаем появления ошибки"):
-            error_message = payment_page.get_error_message_for_month()
+            error_message = payment_page.get_error_message_for_month_credit()
             assert "Неверный формат" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.18: Ввод невалидных данных в поле 'Год'")
     @pytest.mark.parametrize("test_string", [
-        "aaa",           # Буквы
-        "!#$%",          # Спецсимволы
-        " ",             # Пробел
-        "24",            # Недопустимый год
+        "aaa",
+        "!#$%",
+        " ",
+        "24",
     ])
     def test_invalid_data_year_credit(self, payment_page, test_string):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
@@ -1065,13 +895,11 @@ class TestInvalidCreditPayments:
                         error_message = payment_page.get_error_message_for_year()
                         assert "Истёк срок действия карты" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.19: Ввод невалидных данных в поле 'Год' (пустое поле)")
     def test_empty_field_year_credit(self, payment_page):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
@@ -1079,30 +907,28 @@ class TestInvalidCreditPayments:
             payment_page.fill_form(
                 CardData.VALID_CARD_NUMBER,
                 CardData.VALID_MONTH,
-                '',  # Пустое поле года
+                '',
                 CardData.VALID_OWNER,
                 CardData.VALID_CVC
             )
 
-        with allure.step("Пытаемся отправить форму"):
+        with allure.step("Отправляем форму"):
             payment_page.submit_form()
 
         with allure.step("Ожидаем появления ошибки"):
-            error_message = payment_page.get_error_message_for_year()
+            error_message = payment_page.get_error_message_for_year_credit()
             assert "Неверный формат" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.20: Ввод невалидных данных в поле 'Владелец'")
     @pytest.mark.parametrize("test_string", [
-        "456",           # Цифры
-        "!#$%",          # Спецсимволы
-        " ",             # Пробел
+        "456",
+        "!#$%",
+        " ",
     ])
     def test_invalid_data_owner_credit(self, payment_page, test_string):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
@@ -1114,13 +940,11 @@ class TestInvalidCreditPayments:
             assert not any(char.isdigit() for char in updated_value), \
                 f"Поле принимает значение, отличное от букв. Текущее значение: '{updated_value}'"
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.21: Ввод невалидных данных в поле 'Владелец' (пустое поле)")
     def test_empty_field_owner_credit(self, payment_page):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
@@ -1129,29 +953,27 @@ class TestInvalidCreditPayments:
                 CardData.VALID_CARD_NUMBER,
                 CardData.VALID_MONTH,
                 CardData.VALID_YEAR,
-                '',  # Пустое поле владельца
+                '',
                 CardData.VALID_CVC
             )
 
-        with allure.step("Пытаемся отправить форму"):
+        with allure.step("Отправляем форму"):
             payment_page.submit_form()
 
         with allure.step("Ожидаем появления ошибки"):
-            error_message = payment_page.get_error_message_for_owner()
+            error_message = payment_page.get_error_message_for_owner_credit()
             assert "Поле обязательно для заполнения" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.22: Ввод невалидных данных в поле 'CVV/CVC'")
     @pytest.mark.parametrize("test_string", [
-        "aaa",           # Буквы
-        "!#$%",          # Спецсимволы
-        " ",             # Пробел
+        "aaa",
+        "!#$%",
+        " ",
     ])
     def test_invalid_data_cvv_credit(self, payment_page, test_string):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
@@ -1162,13 +984,11 @@ class TestInvalidCreditPayments:
             updated_value = payment_page.get_cvc_value()
             assert set(updated_value).issubset(set("0123456789")), f"Поле приняло символы, отличные от цифр. Текущее значение: '{updated_value}'"
 
-@pytest.mark.usefixtures("clear_database")
-class TestInvalidCreditPayments:
     @allure.epic("Негативные сценарии")
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.23: Ввод невалидных данных в поле 'CVV/CVC' (пустое поле)")
     def test_empty_field_cvv_credit(self, payment_page):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
@@ -1178,80 +998,54 @@ class TestInvalidCreditPayments:
                 CardData.VALID_MONTH,
                 CardData.VALID_YEAR,
                 CardData.VALID_OWNER,
-                ''  # Пустое поле CVV/CVC
+                ''
             )
 
-        with allure.step("Пытаемся отправить форму"):
+        with allure.step("Отправляем форму"):
             payment_page.submit_form()
 
         with allure.step("Ожидаем появления ошибки"):
-            error_message = payment_page.get_error_message_for_cvc()
+            error_message = payment_page.get_error_message_for_cvc_credit()
             assert "Поле обязательно для заполнения" in error_message, "Ошибка не появилась или текст не соответствует ожиданию."
 
-@allure.epic("Негативные сценарии")
-@allure.title("Тестирование оплаты тура с кредитом")
-@allure.description("Тест 2.24: Проверка записи в базу данных")
-# Тест 2.24: Проверка записи в базу данных
-def test_database_by_invalid_card_credit(driver):
-    with allure.step("Переходим на страницу"):
-        driver.get("http://localhost:8080/")
+    @allure.epic("Негативные сценарии")
+    @allure.title("Тестирование оплаты тура с кредитом")
+    @allure.description("Тест 2.24: Проверка записи в базу данных")
+    def test_database_by_invalid_card_credit(self, payment_page):
+        with allure.step("Переходим на страницу и производим оплату невалидной картой в кредит"):
+            payment_page.open()
+            payment_page.click_buy_credit_button()
+            payment_page.fill_form(
+                CardData.INVALID_CARD_NUMBER,
+                CardData.VALID_MONTH,
+                CardData.VALID_YEAR,
+                CardData.VALID_OWNER,
+                CardData.VALID_CVC
+            )
+            payment_page.submit_form()
 
-    with allure.step("Находим и нажимаем кнопку 'Купить в кредит'"):
-        buy_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/button[2]')
-        buy_button.click()
+        with allure.step("Проверяем неуспешную оплату"):
+            notification_text = payment_page.verify_failed_payment()
+            assert "Ошибка! Банк отказал в проведении операции." in notification_text
 
-    with allure.step("Находим поля ввода и заполняем их данными"):
-        card_number_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[1]/span/span/span[2]/input')
-        card_number_input.clear()
-        card_number_input.send_keys(CardData.INVALID_CARD_NUMBER)
+        with allure.step("Проверяем запись в базе данных"):
+            connector = DBConnector(
+                host='localhost',
+                port=3306,
+                user='app',
+                password='pass',
+                db='app'
+            )
+            query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='DECLINED';"
+            result = connector.fetch_data(query, ('4442',))
 
-        month_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
-        month_input.clear()
-        month_input.send_keys('08')
-
-        year_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
-        year_input.clear()
-        year_input.send_keys('26')
-
-        owner_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
-        owner_input.clear()
-        owner_input.send_keys('DENIS IVANOV')
-
-        cvc_input = driver.find_element(By.XPATH,'//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
-        cvc_input.clear()
-        cvc_input.send_keys('555')
-
-    with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
-        continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
-        continue_button.click()
-
-    with allure.step("Ожидаем появления уведомления о неуспешной оплате"):
-        wait = WebDriverWait(driver, 15)
-        success_notification = wait.until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, '.notification.notification_status_error')))
-
-    with allure.step("Проверяем текст уведомления"):
-        notification_text = success_notification.find_element(By.CLASS_NAME, 'notification__content').text
-        assert "Ошибка! Банк отказал в проведении операции." in notification_text
-
-    with allure.step("Проверяем запись в базе данных"):
-        connector = DBConnector(
-            host='localhost',
-            port=3306,
-            user='app',
-            password='pass',
-            db='app'
-        )
-        query = "SELECT COUNT(*) FROM payment_entity WHERE last_four_digits=%s AND status='DECLINED';"
-        result = connector.fetch_data(query, ('4442',))
-
-    with allure.step("Проверяем, что результат ненулевой и первая запись содержит значение больше 0"):
-        if len(result) == 0:
-            assert False, "Запрос к базе данных вернул нулевое количество записей."
-        elif result[0][0] <= 0:
-            assert False, "Запись о платеже не найдена в базе данных!"
-        else:
-            assert True, "Запись о платеже найдена в базе данных."
+        with allure.step("Проверяем, что результат ненулевой и первая запись содержит значение больше 0"):
+            if len(result) == 0:
+                assert False, "Запрос к базе данных вернул нулевое количество записей."
+            elif result[0][0] <= 0:
+                assert False, "Запись о платеже не найдена в базе данных!"
+            else:
+                assert True, "Запись о платеже найдена в базе данных."
 
 @pytest.mark.usefixtures("clear_database")
 class TestOtherChecks:
