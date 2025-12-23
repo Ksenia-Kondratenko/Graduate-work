@@ -88,19 +88,19 @@ def test_valid_data_card_number(driver):
 
         month_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[1]/span/span/span[2]/input')
         month_input.clear()
-        month_input.send_keys('07')
+        month_input.send_keys(CardData.VALID_MONTH)
 
         year_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[2]/span/span[2]/span/span/span[2]/input')
         year_input.clear()
-        year_input.send_keys('26')
+        year_input.send_keys(CardData.VALID_YEAR)
 
         owner_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[1]/span/span/span[2]/input')
         owner_input.clear()
-        owner_input.send_keys('DENIS IVANOV')
+        owner_input.send_keys(CardData.VALID_OWNER)
 
         cvc_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[3]/span/span[2]/span/span/span[2]/input')
         cvc_input.clear()
-        cvc_input.send_keys('555')
+        cvc_input.send_keys(CardData.VALID_CVC)
 
     with allure.step("Находим и нажимаем кнопку 'Продолжить'"):
         continue_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/fieldset/div[4]/button')
