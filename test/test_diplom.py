@@ -499,7 +499,7 @@ class TestInvalidPayments:
                 CardData.VALID_CVC
             )
 
-        with allure.step("Пытаемся отправить форму"):
+        with allure.step("Отправляем форму"):
             payment_page.submit_form()
 
         with allure.step("Ожидаем появления ошибки"):
@@ -697,7 +697,7 @@ class TestInvalidPayments:
                 ''
             )
 
-        with allure.step("Пытаемся отправить форму"):
+        with allure.step("Отправляем форму"):
             payment_page.submit_form()
 
         with allure.step("Ожидаем появления ошибки"):
@@ -774,7 +774,7 @@ class TestInvalidCreditPayments:
         " ",
     ])
     def test_invalid_data_card_number_credit(self, payment_page, test_string):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
@@ -819,7 +819,7 @@ class TestInvalidCreditPayments:
         "13",
     ])
     def test_invalid_data_month_credit(self, payment_page, test_string):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 
@@ -844,7 +844,7 @@ class TestInvalidCreditPayments:
     @allure.title("Тестирование оплаты тура с кредитом")
     @allure.description("Тест 2.17: Ввод невалидных данных в поле 'Месяц' (пустое поле)")
     def test_empty_field_month_credit(self, payment_page):
-        with allure.step("Переходим на страницу и инициируем оплату в кредит"):
+        with allure.step("Переходим на страницу и проводим оплату в кредит"):
             payment_page.open()
             payment_page.click_buy_credit_button()
 

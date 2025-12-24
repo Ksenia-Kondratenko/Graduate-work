@@ -5,8 +5,9 @@
 
 Основной причиной невыполнения проверки взаимодействия с базой данных стали технические трудности, связанные с неправильной настройкой конфигурации окружения. 
 В частности:
-- ошибки настройки конфигурации контейнеров Docker;
-- ошибки настройки баз данных. 
+- ошибки настройки конфигурации контейнеров Docker, а именно: ошибка "Cannot start Docker Compose application. Reason: compose [start] exit status 1. Container mysql_db Starting Error response from daemon: ports are not available: exposing port TCP 0.0.0.0:3306 -> 127.0.0.1:0: listen tcp 0.0.0.0:3306: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted".
+Сервер MySQL не смог стартовать, так как порт 3306 уже занят другим приложением.
+- ошибки настройки баз данных: ошибка "2003, "Can't connect to MySQL server on 'mysql_db' ([Errno 11001] getaddrinfo failed)"". Приложение не может найти сервер MySQL по имени хоста mysql_db. 
 
 
 Сработавшие риски:
