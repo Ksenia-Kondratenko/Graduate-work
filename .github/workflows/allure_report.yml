@@ -47,7 +47,7 @@ jobs:
           ./allure-2.24.1/bin/allure generate allure-results --clean -o allure-report
 
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
+        if: always()
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
